@@ -1,0 +1,256 @@
+﻿<mah:MetroWindow
+    x:Class="PunchClockIn.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=netstandard"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:models="clr-namespace:Punches.Models;assembly=Punches.Models"
+    xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewModels="clr-namespace:PunchClockIn.ViewModels"
+    xmlns:views="clr-namespace:PunchClockIn.Views"
+    xmlns:punchClockIn="clr-namespace:PunchClockIn"
+    Title="{Binding Title}"
+    Width="950"
+    Height="600"
+    d:DataContext="{d:DesignInstance {x:Type viewModels:MainViewModel}}"
+    DataContext="{Binding Main, Source={StaticResource Locator}}"
+    ResizeMode="CanResizeWithGrip"
+    StateChanged="MainWindow_OnStateChanged"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <!-- <BooleanToVisibilityConverter x:Key="BoolVisible" /> -->
+        <Style
+            x:Key="LinkButtonStyle"
+            BasedOn="{StaticResource MahApps.Styles.Button.WindowCommands}"
+            TargetType="{x:Type Button}">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style
+            x:Key="UnderlinedTextBlockStyle"
+            BasedOn="{StaticResource {x:Type TextBlock}}"
+            TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding InitCommand}" />
+            <b:InvokeCommandAction Command="{Binding Notify.InitCommand, Source={StaticResource Locator}}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Viewbox Margin="4" Stretch="Uniform">
+                <Image Source="Everaldo-Crystal-Clear-Mimetype-schedule.ico" />
+            </Viewbox>
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
+
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <Button
+                Command="{Binding TestCommand}"
+                ToolTip="測試提醒訊息"
+                Visibility="{Binding Path=(diagnostics:Debugger.IsAttached), Converter={StaticResource BooleanToVisibilityConverter}}">
+                <iconPacks:PackIconMaterial Foreground="Yellow" Kind="LightbulbOn" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.LeftWindowCommands>
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button
+                Command="{Binding WorkInCommand}"
+                Content="{iconPacks:Material Kind=ClockIn}"
+                ToolTip="上班打卡" />
+            <!--  Visibility="{Binding Path=(diagnostics:Debugger.IsAttached), Converter={StaticResource BooleanToVisibilityConverter}}" />  -->
+            <Button
+                Command="{Binding WorkOutCommand}"
+                Content="{iconPacks:Material Kind=ClockOut}"
+                ToolTip="下班打卡" />
+            <!--  Visibility="{Binding Path=(diagnostics:Debugger.IsAttached), Converter={StaticResource BooleanToVisibilityConverter}}" />  -->
+            <Button
+                Command="{Binding DailyCommand}"
+                Content="{iconPacks:BoxIcons Kind=SolidNote}"
+                ToolTip="日報填寫" />
+            <!--  Visibility="{Binding Path=(diagnostics:Debugger.IsAttached), Converter={StaticResource BooleanToVisibilityConverter}}" />  -->
+            <ToggleButton
+                x:Name="ToggleButtonOpenSettings"
+                Content="{iconPacks:Modern Kind=Settings}"
+                ToolTip="設定" />
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <!--  右側設定畫面  -->
+    <mah:MetroWindow.Flyouts>
+        <mah:FlyoutsControl>
+            <mah:Flyout
+                MinWidth="350"
+                Background="#FF323232"
+                CloseButtonVisibility="Visible"
+                DataContext="{Binding Settings}"
+                Header="設定"
+                IsModal="True"
+                IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}"
+                Position="Right">
+                <views:SettingsView />
+            </mah:Flyout>
+        </mah:FlyoutsControl>
+    </mah:MetroWindow.Flyouts>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <mah:HamburgerMenu
+            Grid.Row="0"
+            DisplayMode="CompactOverlay"
+            SelectedIndex="0"
+            Content="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"
+            >
+            <!--  Header  -->
+            <mah:HamburgerMenu.HamburgerMenuHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Foreground="White"
+                        Text="Menus" />
+                </DataTemplate>
+            </mah:HamburgerMenu.HamburgerMenuHeaderTemplate>
+            
+            <mah:HamburgerMenu.ItemsSource>
+                <mah:HamburgerMenuItemCollection>
+                    <mah:HamburgerMenuIconItem Label="Clock In" 
+                        Tag="{x:Static viewModels:MenuType.ClockIn}" 
+                        Icon="{iconPacks:FontAwesome Kind=UserClockSolid}"/>
+                    <mah:HamburgerMenuIconItem Label="Daily" 
+                        Tag="{x:Static viewModels:MenuType.DailyQuery}" 
+                        Icon="{iconPacks:RemixIcon Kind=StickyNoteFill}"/>
+                </mah:HamburgerMenuItemCollection>
+            </mah:HamburgerMenu.ItemsSource>
+            <mah:HamburgerMenu.ItemTemplate>
+                <DataTemplate DataType="{x:Type mah:HamburgerMenuIconItem}">
+                    <DockPanel Height="48" LastChildFill="True">
+                        <Grid
+                             x:Name="IconPart"
+                             Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type mah:HamburgerMenu}}, Path=CompactPaneLength}"
+                             DockPanel.Dock="Left">
+                             <ContentControl 
+                                 Margin="12"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Content="{Binding Icon}"/>
+                         </Grid>
+                        <TextBlock
+                              x:Name="TextPart"
+                              VerticalAlignment="Center"
+                              FontSize="16"
+                              Text="{Binding Label}" />
+                    </DockPanel>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type mah:HamburgerMenu}}, Path=PanePlacement}" Value="Right">
+                        <Setter TargetName="IconPart" Property="DockPanel.Dock" Value="Right" />
+                        <Setter TargetName="TextPart" Property="Margin" Value="8,0,0,0" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+            </mah:HamburgerMenu.ItemTemplate>
+            
+            <!-- Content -->
+            <mah:HamburgerMenu.ContentTemplateSelector>
+                <punchClockIn:MenuContentTemplateSelector>
+                    <punchClockIn:MenuContentTemplateSelector.Templates>
+                        <DataTemplate x:Key="{x:Static viewModels:MenuType.ClockIn}">
+                            <views:PunchQuery/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="{x:Static viewModels:MenuType.DailyQuery}">
+                            <views:DailyQuery/>
+                        </DataTemplate>
+                    </punchClockIn:MenuContentTemplateSelector.Templates>
+                </punchClockIn:MenuContentTemplateSelector>
+            </mah:HamburgerMenu.ContentTemplateSelector>
+        </mah:HamburgerMenu>
+
+        <StatusBar Grid.Row="1" Height="24">
+            <StatusBarItem>
+                <TextBlock>
+                    <TextBlock.Inlines>
+                        <Run Text="打卡程式版本 : " />
+                        <Run Text="{Binding Version, Mode=OneWay}" />
+                    </TextBlock.Inlines>
+                </TextBlock>
+            </StatusBarItem>
+
+            <Separator Style="{DynamicResource MahApps.Styles.Separator.StatusBar}" />
+
+            <StatusBarItem Content="{Binding PunchQuery.SelectSheets, Source={StaticResource Locator}}">
+                <StatusBarItem.ContentTemplate>
+                    <DataTemplate DataType="{x:Type models:ClockMonth}">
+                        <Button
+                            Margin="0,0,4,0"
+                            Command="{Binding Main.OpenPunchUrlCommand, Source={StaticResource Locator}}"
+                            Style="{StaticResource LinkButtonStyle}"
+                            ToolTip="{Binding Id, StringFormat={}開啟{0}}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconOcticons
+                                    Width="14"
+                                    Height="14"
+                                    Margin="0,0,4,0"
+                                    VerticalAlignment="Center"
+                                    Kind="LinkExternal" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource UnderlinedTextBlockStyle}"
+                                    Text="{Binding Id, StringFormat={}點我開啟打卡網頁 {0}}" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </StatusBarItem.ContentTemplate>
+            </StatusBarItem>
+
+            <Separator Style="{DynamicResource MahApps.Styles.Separator.StatusBar}" />
+
+            <StatusBarItem Content="{x:Static system:DateTime.Today}">
+                <StatusBarItem.ContentTemplate>
+                    <DataTemplate DataType="{x:Type system:DateTime}">
+                        <Button
+                            Margin="0,0,4,0"
+                            Command="{Binding Main.OpenDailyUrlCommand, Source={StaticResource Locator}}"
+                            Style="{StaticResource LinkButtonStyle}"
+                            ToolTip="{Binding ., StringFormat={}開啟日報{0:yyyy/M}}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconOcticons
+                                    Width="14"
+                                    Height="14"
+                                    Margin="0,0,4,0"
+                                    VerticalAlignment="Center"
+                                    Kind="LinkExternal" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource UnderlinedTextBlockStyle}"
+                                    Text="{Binding ., StringFormat={}點我開啟日報網頁 {0:yyyy/M}}" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </StatusBarItem.ContentTemplate>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</mah:MetroWindow>
