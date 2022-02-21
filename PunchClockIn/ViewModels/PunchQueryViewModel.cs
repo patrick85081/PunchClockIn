@@ -17,7 +17,7 @@ public class PunchQueryViewModel : ReactiveObject
     private readonly IEmployeeRepository employeeRepository;
     private readonly IClockInRepository clockInRepository;
     private readonly IClockMonthRepository clockMonthRepository;
-    private readonly IClockInSheetService clockInSheetService;
+    private readonly IPunchSheetService punchSheetService;
     private readonly IKeyValueRepository keyValueRepository;
     private readonly IConfig config;
 
@@ -73,7 +73,7 @@ public class PunchQueryViewModel : ReactiveObject
         IEmployeeRepository employeeRepository,
         IClockInRepository clockInRepository,
         IClockMonthRepository clockMonthRepository,
-        IClockInSheetService clockInSheetService,
+        IPunchSheetService punchSheetService,
         IKeyValueRepository keyValueRepository,
         IConfig config
     )
@@ -81,12 +81,12 @@ public class PunchQueryViewModel : ReactiveObject
         this.employeeRepository = employeeRepository;
         this.clockInRepository = clockInRepository;
         this.clockMonthRepository = clockMonthRepository;
-        this.clockInSheetService = clockInSheetService;
+        this.punchSheetService = punchSheetService;
         this.keyValueRepository = keyValueRepository;
         this.config = config;
 
 
-        NameObservable(this.employeeRepository, this.clockInSheetService)
+        NameObservable(this.employeeRepository, this.punchSheetService)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(names =>
             {
@@ -144,10 +144,10 @@ public class PunchQueryViewModel : ReactiveObject
             
     }
 
-    private IObservable<string[]> NameObservable(IEmployeeRepository employeeRepository, IClockInSheetService clockInSheetService)
+    private IObservable<string[]> NameObservable(IEmployeeRepository employeeRepository, IPunchSheetService punchSheetService)
     {
         var fromDB = Observable.Return(employeeRepository.GetAll());
-        var fromNetwork = Observable.FromAsync(clockInSheetService.GetEmployee)
+        var fromNetwork = Observable.FromAsync(punchSheetService.GetEmployee)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Do(data => this.employeeRepository.Set(data));
 
@@ -165,7 +165,7 @@ public class PunchQueryViewModel : ReactiveObject
             (title: this.keyValueRepository.GetTitle(), month: this.clockMonthRepository.GetAll().ToArray()));
 
         var fromNetwork = Observable
-            .FromAsync(cancellationToken => this.clockInSheetService.GetTitleAndMonth(cancellationToken))
+            .FromAsync(cancellationToken => this.punchSheetService.GetTitleAndMonth(cancellationToken))
             .Do(item => this.config.Title = item.title)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Do(item => this.clockMonthRepository.Set(item.month));
@@ -186,7 +186,7 @@ public class PunchQueryViewModel : ReactiveObject
 
         var fromNetwork = queryEvent
             .Select(qp =>
-                Observable.FromAsync(cancellationToken => this.clockInSheetService.QueryMonthAsync(qp.Month, cancellationToken)))
+                Observable.FromAsync(cancellationToken => this.punchSheetService.QueryMonthAsync(qp.Month, cancellationToken)))
             .Switch()
             .Select(data => data.GroupBy(d => d.Name)
                 .Select(x => x.JoinToEmptyDate(QueryParameter.Month, x.Key).ToArray())

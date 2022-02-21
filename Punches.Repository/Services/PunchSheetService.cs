@@ -5,7 +5,7 @@ using Punches.Repository.GoogleSheet;
 
 namespace Punches.Repository.Services;
 
-public class ClockInClockInSheetService : IClockInSheetService
+public class PunchSheetService : IPunchSheetService
 {
     private readonly string spreadsheetId;
     private readonly SpreadsheetsServiceFactory factory;
@@ -15,7 +15,7 @@ public class ClockInClockInSheetService : IClockInSheetService
     private Task<ISpreadsheetsApi> GetSpreadsheetsRepository(CancellationToken cancellationToken) =>
         factory.GetSpreadsheetsRepository(cancellationToken);
 
-    public ClockInClockInSheetService(SpreadsheetsServiceFactory factory, ILogger<ClockInClockInSheetService> logger, GoogleSheetConfig googleSheetConfig)
+    public PunchSheetService(SpreadsheetsServiceFactory factory, ILogger<PunchSheetService> logger, GoogleSheetConfig googleSheetConfig)
     {
         this.factory = factory;
         this.logger = logger;
@@ -208,5 +208,12 @@ public class ClockInClockInSheetService : IClockInSheetService
             await spreadsheetsRepository.WriteRequest(spreadsheetId, $"{month}!A{clockInRowNumber}:D{clockInRowNumber}",
                 date.ToString("yyyy/M/d"), department, name, workOn.ToString(@"hh\:mm"));
         await spreadsheetsRepository.WriteRequest(spreadsheetId, $"{month}!G{clockInRowNumber}:G{clockInRowNumber}", "公司");
+    }
+
+    private readonly TimeSpan StartTime = TimeSpan.Parse("08:00");
+    private readonly TimeSpan EndTime = TimeSpan.Parse("09:30");
+    public bool IsInWorkTime(TimeSpan nowTime)
+    {
+        return nowTime < StartTime || EndTime < nowTime;
     }
 }

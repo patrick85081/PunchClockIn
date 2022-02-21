@@ -28,14 +28,16 @@
    ![日報填寫](./snapshot/PunchAndDaily.png)
 
 4. 日報、打卡網址連結
+   > 由於打卡助手無法修改打卡時間與日報內容，所以軟件下方提供Sheet連結，方便手動上去修改
+   ![開啟打卡連結](./snapshot/ExtraUrl.jpg)
 
 5. 配合另一隻Windows服務，偵測到使用者登入，打API給打卡程式，自動化上班打卡
-   > 由打卡軟件判斷是否需要打卡
+   > 由外部實作打卡偵測方式，目前提供Windows使用者登入偵測，也可以開發打卡按鈕與IO卡偵測，最後打API給打卡軟件，由打卡軟件判斷是否需要打卡
 
-7. 下班忘打卡時，自動補打
+6. 下班忘打卡時，自動補打
     > 下班時間超過一定時間，自動補打下班卡
 
-8. 功能設定
+7. 功能設定
    * 使用者設定
    * 開關下班通知功能
    * 開關下班自動打卡功能
@@ -60,9 +62,9 @@
    * LogonWorkOnService - 使用者登入偵測 (選配，需註冊成 Windows Service)
 
 ## 設定檔
-設定檔位於`Control.ini`中，必備參數如下
+設定檔位於`Config.ini`中，必備參數如下
 ``` ini
-[App]
+[GoogleSheet]
 # 申請Google API 的授權
 ClientSecretFilePath=<Google Sheet Client Secret>
 # 打卡的Sheet Id

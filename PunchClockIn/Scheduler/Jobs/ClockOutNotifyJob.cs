@@ -16,20 +16,20 @@ public class ClockOutNotifyJob : IJob
 {
     private readonly IConfig config;
     private readonly IClockInRepository clockInRepository;
-    private readonly IClockInSheetService clockInSheetService;
+    private readonly IPunchSheetService punchSheetService;
     private readonly ILogger logger;
     private readonly FancyBalloonViewModel fancyBalloon;
 
     public ClockOutNotifyJob(
         IConfig config,
         IClockInRepository clockInRepository,
-        IClockInSheetService clockInSheetService,
+        IPunchSheetService punchSheetService,
         ILogger logger,
         FancyBalloonViewModel fancyBalloon)
     {
         this.config = config;
         this.clockInRepository = clockInRepository;
-        this.clockInSheetService = clockInSheetService;
+        this.punchSheetService = punchSheetService;
         this.logger = logger;
         this.fancyBalloon = fancyBalloon;
     }

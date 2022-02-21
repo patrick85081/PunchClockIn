@@ -5,14 +5,14 @@ using Punches.Repository.GoogleSheet;
 
 namespace Punches.Repository.Fake;
 
-public class DbClockInSheetService : IClockInSheetService
+public class DbPunchSheetService : IPunchSheetService
 {
     private readonly DataContext dataContext;
     private readonly IClockInRepository clockInRepository;
     private readonly IKeyValueRepository keyValueRepository;
     private readonly GoogleSheetConfig config;
 
-    public DbClockInSheetService(
+    public DbPunchSheetService(
         DataContext dataContext, 
         IClockInRepository clockInRepository, 
         IKeyValueRepository keyValueRepository,
@@ -72,11 +72,18 @@ public class DbClockInSheetService : IClockInSheetService
 
     public async Task WriteWorkOffTime(DateTime date, string name, TimeSpan workOff)
     {
-        
+        // Not Implement
     }
 
     public async Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn)
     {
-        
+        // Not Implement
+    }
+    
+    private readonly TimeSpan StartTime = TimeSpan.Parse("08:00");
+    private readonly TimeSpan EndTime = TimeSpan.Parse("09:30");
+    public bool IsInWorkTime(TimeSpan nowTime)
+    {
+        return nowTime < StartTime || EndTime < nowTime;
     }
 }

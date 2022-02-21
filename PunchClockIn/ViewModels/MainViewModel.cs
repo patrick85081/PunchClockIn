@@ -17,7 +17,7 @@ namespace PunchClockIn.ViewModels;
 
 public class MainViewModel : ReactiveObject
 {
-    private readonly IClockInSheetService clockInSheetService;
+    private readonly IPunchSheetService punchSheetService;
     private readonly IEmployeeRepository employeeRepository;
     private readonly IQuartzService quartzService;
     private readonly IDialogService dialogService;
@@ -41,7 +41,7 @@ public class MainViewModel : ReactiveObject
 
     public ReactiveCommand<Unit, Unit> OpenPunchUrlCommand => ReactiveCommand.Create(() =>
     {
-        var url = clockInSheetService.GetSheetUrl(punchQuery.SelectSheets);
+        var url = punchSheetService.GetSheetUrl(punchQuery.SelectSheets);
         var info = new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true };
         Process.Start(info);
     });
@@ -76,7 +76,7 @@ public class MainViewModel : ReactiveObject
                 return;
             }
 
-            await clockInSheetService.WriteWorkOnTime(dateTime.Date, employee.Department, employee.Id, dateTime.TimeOfDay);
+            await punchSheetService.WriteWorkOnTime(dateTime.Date, employee.Department, employee.Id, dateTime.TimeOfDay);
             await punchQuery.QueryCommand.Execute(punchQuery.QueryParameter);
             await dialogService.ShowMessageBox("Message", "Success");
         }
@@ -97,7 +97,7 @@ public class MainViewModel : ReactiveObject
                 await dialogService.ShowWorkInOutDialog($"{config.Name} 下班打卡", defaultWorkTime);
             if (!dialogResult) return;
 
-            await clockInSheetService.WriteWorkOffTime(dateTime.Date, config.Name, dateTime.TimeOfDay);
+            await punchSheetService.WriteWorkOffTime(dateTime.Date, config.Name, dateTime.TimeOfDay);
             await punchQuery.QueryCommand.Execute(punchQuery.QueryParameter);
             await dialogService.ShowMessageBox("Message", "Success");
         }
@@ -139,7 +139,7 @@ public class MainViewModel : ReactiveObject
 
 
     public MainViewModel(
-        IClockInSheetService clockInSheetService,
+        IPunchSheetService punchSheetService,
         IEmployeeRepository employeeRepository,
         IQuartzService quartzService,
         IDialogService dialogService,
@@ -148,7 +148,7 @@ public class MainViewModel : ReactiveObject
         IConfig config,
         PunchQueryViewModel punchQuery)
     {
-        this.clockInSheetService = clockInSheetService;
+        this.punchSheetService = punchSheetService;
         this.employeeRepository = employeeRepository;
         this.quartzService = quartzService;
         this.dialogService = dialogService;

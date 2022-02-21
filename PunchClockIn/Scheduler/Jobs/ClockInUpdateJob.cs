@@ -13,7 +13,7 @@ namespace PunchClockIn.Scheduler.Jobs;
 [DisallowConcurrentExecution]
 public class ClockInUpdateJob : IJob
 {
-    private readonly IClockInSheetService clockInSheetService;
+    private readonly IPunchSheetService punchSheetService;
     private readonly ILogger logger;
     private readonly IConfig config;
     private readonly IClockInRepository clockInRepository;
@@ -21,10 +21,10 @@ public class ClockInUpdateJob : IJob
     public ClockInUpdateJob(
         IConfig config,
         IClockInRepository clockInRepository,
-        IClockInSheetService clockInSheetService,
+        IPunchSheetService punchSheetService,
         ILogger logger)
     {
-        this.clockInSheetService = clockInSheetService;
+        this.punchSheetService = punchSheetService;
         this.logger = logger;
         this.config = config;
         this.clockInRepository = clockInRepository;
@@ -33,7 +33,7 @@ public class ClockInUpdateJob : IJob
     {
         logger.Info($"{nameof(ClockInUpdateJob)} Start");
         QueryParameter parameter = new QueryParameter() { Month = DateTime.Today.ToClockInMonth() };
-        var clockIns = await clockInSheetService.QueryMonthAsync(parameter.Month, CancellationToken.None);
+        var clockIns = await punchSheetService.QueryMonthAsync(parameter.Month, CancellationToken.None);
         clockInRepository.Set(clockIns);
         logger.Info($"{nameof(ClockInUpdateJob)} End");
     }

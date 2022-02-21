@@ -16,18 +16,18 @@ public class AutoClockOutJob : IJob
 {
     private readonly IConfig config;
     private readonly IClockInRepository clockInRepository;
-    private readonly IClockInSheetService clockInSheetService;
+    private readonly IPunchSheetService punchSheetService;
     private readonly ILogger logger;
 
     public AutoClockOutJob(
         IConfig config,
         IClockInRepository clockInRepository,
-        IClockInSheetService clockInSheetService,
+        IPunchSheetService punchSheetService,
         ILogger logger)
     {
         this.config = config;
         this.clockInRepository = clockInRepository;
-        this.clockInSheetService = clockInSheetService;
+        this.punchSheetService = punchSheetService;
         this.logger = logger;
     }
     
@@ -48,11 +48,11 @@ public class AutoClockOutJob : IJob
         
         var workOffTime = shouldWorkOffTime.Add(TimeSpan.FromMinutes(new Random().Next(3, 10)));
         logger.Info($"{config.Name} {clockIn.WorkOn} 目標打卡時間 {shouldWorkOffTime}，開始打下班卡 {workOffTime}");
-        await clockInSheetService.WriteWorkOffTime(today, config.Name, workOffTime);
+        await punchSheetService.WriteWorkOffTime(today, config.Name, workOffTime);
         logger.Info($"{config.Name} 打卡成功");
 
         QueryParameter parameter = new QueryParameter() { Month = today.ToClockInMonth(), Name = config.Name };
-        var rowData = await clockInSheetService.QueryMonthAsync(parameter.Month, CancellationToken.None);
+        var rowData = await punchSheetService.QueryMonthAsync(parameter.Month, CancellationToken.None);
         var checkData = rowData.FirstOrDefault(x => x.Name == config.Name && x.Date == today);
         if (checkData == null)
         {

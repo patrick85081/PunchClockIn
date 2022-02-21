@@ -75,11 +75,14 @@ public static class Program
 
     private static async Task<IResult> WriteWorkOn(
         Microsoft.Extensions.Logging.ILogger<App> logger,
-        IClockInSheetService clockInSheetService, IEmployeeRepository employeeRepository, IConfig config)
+        IPunchSheetService punchSheetService, 
+        IEmployeeRepository employeeRepository, 
+        IConfig config)
     {
         logger.LogInformation("Get Work On API Request");
 
-        var employee = employeeRepository.GetAll().FirstOrDefault(e => e.Id == config.Name);
+        var employee = employeeRepository.GetAll()
+            .FirstOrDefault(e => e.Id == config.Name);
         if (employee == null)
         {
             logger.LogInformation($"API Work On Request : Employee Name is not found.");
@@ -87,7 +90,7 @@ public static class Program
         }
 
         var nowTime = DateTime.Now.TimeOfDay;
-        if (nowTime < TimeSpan.Parse("08:00") || TimeSpan.Parse("09:30") < nowTime)
+        if (punchSheetService.IsInWorkTime(nowTime))
         {
             logger.LogInformation($"API Work On Request : Current is not work on time.");
             return Results.BadRequest("Current is not work on time.");
@@ -95,7 +98,7 @@ public static class Program
 
         try
         {
-            await clockInSheetService.WriteWorkOnTime(
+            await punchSheetService.WriteWorkOnTime(
                 DateTime.Today,
                 employee.Department, config.Name,
                 nowTime);
@@ -111,7 +114,7 @@ public static class Program
 
     private static void ConfigureAutofac(HostBuilderContext context, ContainerBuilder builder)
     {
-        var config = new Config();
+        IConfig config = new Config();
         builder.RegisterInstance(config)
             .As<IConfig>();
 
@@ -144,25 +147,21 @@ public static class Program
             typeof(DependencyObject)).DefaultValue);
         // var designMode = Application.Current is not App;
         builder.Register(x => 
-                new GoogleSheetConfig(x.Resolve<IConfig>().ClientSecretFilePath)
-                {
-                    DailySpreadsheetId = config.DailySpreadsheetId,
-                    ClockInSpreadsheetId = config.PunchSpreadsheetId,
-                })
+                x.Resolve<IConfig>().ToSheetConfig())
             .AsSelf()
             .SingleInstance();
         if (config.DebugMode || designMode)
         {
-            builder.RegisterType<DbClockInSheetService>()
-                .As<IClockInSheetService>()
+            builder.RegisterType<DbPunchSheetService>()
+                .As<IPunchSheetService>()
                 .SingleInstance();
             builder.RegisterType<FakeDailySheetService>()
                 .As<IDailySheetService>();
         }
         else
         {
-            builder.RegisterType<ClockInClockInSheetService>()
-                .As<IClockInSheetService>()
+            builder.RegisterType<PunchSheetService>()
+                .As<IPunchSheetService>()
                 .SingleInstance();
             builder.RegisterType<DailySheetService>()
                 .As<IDailySheetService>();
