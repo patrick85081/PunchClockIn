@@ -54,9 +54,6 @@ public class MainViewModel : ReactiveObject
                 var info = new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true };
                 Process.Start(info);
             });
-        // var url = await dailySheetService.GetSheetUrl(DateTime.Today.ToString("yyyy/M"));
-        // var info = new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true };
-        // Process.Start(info);
     });
 
     public ReactiveCommand<Unit, Unit> WorkInCommand => ReactiveCommand.CreateFromTask(async () =>
@@ -78,7 +75,7 @@ public class MainViewModel : ReactiveObject
 
             await punchSheetService.WriteWorkOnTime(dateTime.Date, employee.Department, employee.Id, dateTime.TimeOfDay);
             await punchQuery.QueryCommand.Execute(punchQuery.QueryParameter);
-            await dialogService.ShowMessageBox("Message", "Success");
+            await dialogService.ShowMessageBox("Message", "上班打卡成功");
         }
         catch (Exception e)
         {
@@ -99,7 +96,7 @@ public class MainViewModel : ReactiveObject
 
             await punchSheetService.WriteWorkOffTime(dateTime.Date, config.Name, dateTime.TimeOfDay);
             await punchQuery.QueryCommand.Execute(punchQuery.QueryParameter);
-            await dialogService.ShowMessageBox("Message", "Success");
+            await dialogService.ShowMessageBox("Message", "下班打卡成功");
         }
         catch (Exception e)
         {

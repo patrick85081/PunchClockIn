@@ -19,7 +19,14 @@ namespace Punches.Repository
 
 
         public static bool HasData => holidayMap != null;
+
         private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+        Dictionary<int, string> yearHolidayMap = new Dictionary<int, string>()
+        {
+            {2022, "https://www.dgpa.gov.tw/FileConversion?filename=dgpa/files/202106/9112cdab-5954-4dfc-b476-2e38009ad039.csv&nfix=&name=111年中華民國政府行政機關辦公日曆表.csv"},
+            {2021, "https://www.dgpa.gov.tw/FileConversion?filename=dgpa/files/202007/08c0add8-7b90-4504-8de5-829e8240a282.csv&nfix=&name=110中華民國政府行政機關辦公日曆表.csv"},
+        };
 
         public HolidayRepository(DataContext dataContext)
         {
@@ -32,21 +39,14 @@ namespace Punches.Repository
             try
             {
                 await _lock.WaitAsync();
-                var count = dataContext.Holiday.Count(h => h.Id.StartsWith(DateTime.Today.Year.ToString()));
-                if (count == 0)
+                var existYear = dataContext.Holiday
+                    .Exists(h => h.Id.StartsWith(DateTime.Today.Year.ToString()));
+                if (existYear == false)
                 {
-                    if (DateTime.Today.Year == 2022)
+                    var todayYear = DateTime.Today.Year;
+                    if (yearHolidayMap.ContainsKey(todayYear))
                     {
-                        var year111 = 
-                            "https://www.dgpa.gov.tw/FileConversion?filename=dgpa/files/202106/9112cdab-5954-4dfc-b476-2e38009ad039.csv&nfix=&name=111年中華民國政府行政機關辦公日曆表.csv";
-                        var holiday = await GetHolidayFormNetwork(year111);
-                        dataContext.Holiday.Upsert(holiday);
-                    }
-                    if (DateTime.Today.Year == 2021)
-                    {
-                        var year110 =
-                            "https://www.dgpa.gov.tw/FileConversion?filename=dgpa/files/202007/08c0add8-7b90-4504-8de5-829e8240a282.csv&nfix=&name=110中華民國政府行政機關辦公日曆表.csv";
-                        var holiday = await GetHolidayFormNetwork(year110);
+                        var holiday = await GetHolidayFormNetwork(yearHolidayMap[todayYear]);
                         dataContext.Holiday.Upsert(holiday);
                     }
                 }
@@ -66,6 +66,7 @@ namespace Punches.Repository
             }
             else
             {
+                // 使用六日判斷
                 return date is { DayOfWeek: DayOfWeek.Saturday or DayOfWeek.Sunday };
             }
         }
@@ -75,31 +76,35 @@ namespace Punches.Repository
             return day;
         }
 
-        private static async Task<List<Holiday>> GetHolidayFormNetwork(string url)
+        private static async Task<IList<Holiday>> GetHolidayFormNetwork(string url)
         {
-            // var holidayCsv = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Holiday.csv");
             var httpClient = new HttpClient();
-            // var uri = new Uri(HttpUtility.HtmlEncode(url));
             var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url)
             {
                 Headers = {{"User-Agent", "PostmanRuntime/7.28.4"}, {"Accept", "*/*"}}
             });
 
             var stream = await response.Content.ReadAsStreamAsync();
-            var list = await Observable.Using(
+            
+            var readLineObservable = Observable.Using(
                     () => new StreamReader(stream, Encoding.GetEncoding("big5")),
-                    sr => sr.ToObservable())
-                .Skip(1)
-                .Select(x => x.Split(','))
-                .Select(column => new Holiday()
-                {
-                    Id = column.ElementAtOrDefault(0),
-                    Date = DateTime.ParseExact(column.ElementAtOrDefault(0), "yyyyMMdd", null),
-                    Name = column.ElementAtOrDefault(3),
-                    IsHoliday = column.ElementAtOrDefault(2) == "2",
-                })
+                    sr => sr.ToReadLinesObservable())
+                .Skip(1);
+            
+            var list = await (
+                    //20220101,六,2,開國紀念日
+                    from line in readLineObservable
+                    let column = line.Split(',')
+                    select new Holiday()
+                    {
+                        Id = column.ElementAtOrDefault(0),
+                        Date = DateTime.ParseExact(column.ElementAtOrDefault(0), "yyyyMMdd", null),
+                        Name = column.ElementAtOrDefault(3),
+                        IsHoliday = column.ElementAtOrDefault(2) == "2",
+                    }
+                )
                 .ToList();
-            return list.ToList();
+            return list;
         }
 
     }
