@@ -1,6 +1,6 @@
 ﻿{
   "profiles": {
-    "LogonWorkOnService": {
+    "LogonService": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {

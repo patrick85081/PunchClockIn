@@ -56,10 +56,13 @@
    * 使用`Autofac`做依賴注入功能
    * 使用`ReactiveUI`做響應式MVVM框架
    * 使用`NLog`做日誌記錄
+   * 使用`CommandLineParser`來做LogonService的安裝、移除、執行命令解析
 
 ## 程式用途
    * PunchClockIn - 打卡助手 (平常常駐於 Windows 工具列)
-   * LogonWorkOnService - 使用者登入偵測 (選配，需註冊成 Windows Service)
+   * LogonWorkOnService - 使用者登入偵測 (選配，需註冊成 Windows Service，需要使用使用者帳號登入執行)
+     ![](./snapshot/ServiceAccount.jpg)
+
 
 ## 設定檔
 設定檔位於`Config.ini`中，必備參數如下
@@ -71,4 +74,55 @@ ClientSecretFilePath=<Google Sheet Client Secret>
 PunchSpreadsheetId=<Punch Sheet Id>
 # 日報填寫的Sheet Id
 DailySpreadsheetId=<Daily Sheet Id>
+```
+
+## LogonService 命令
+### Help
+```
+$ LogonService --help
+LogonService 1.0.0
+Copyright (C) 2022 LogonService
+
+  install      Install Windows Service
+
+  uninstall    Uninstall Windows Service
+
+  service      (Default Verb) Run the Program.
+
+  help         Display more information on a specific command.
+
+  version      Display version information.
+```
+
+### 安裝
+請使用使用者帳號執行，需要設定`-u <User> -p <Password>`
+``` cmd
+LogonService install -u ./user -p mypassword
+```
+```
+$ LogonService install --help
+LogonService 1.0.0
+Copyright (C) 2022 LogonService
+
+  -b, --binPath     Service exe path setting
+
+  -n, --name        Service Name setting
+
+  -u, --user        Service Account Setting
+
+  -p, --password    Service Password Setting
+
+  --help            Display this help screen.
+
+  --version         Display version information.
+```
+
+### 移除服務
+``` cmd
+LogonService uninstall
+```
+
+### 執行
+``` cmd
+LogonService
 ```

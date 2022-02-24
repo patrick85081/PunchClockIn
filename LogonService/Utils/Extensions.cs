@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32;
 using Topshelf;
 
-namespace LogonWorkOnService.Utils;
+namespace LogonService.Utils;
 
 public class Extensions
 {

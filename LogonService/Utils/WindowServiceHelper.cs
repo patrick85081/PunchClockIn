@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace LogonWorkOnService.Utils;
+namespace LogonService.Utils;
 
 public class WindowServiceHelper
 {

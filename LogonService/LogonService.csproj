@@ -9,9 +9,11 @@
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
         <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
         <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+        <RootNamespace>LogonService</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.8.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />

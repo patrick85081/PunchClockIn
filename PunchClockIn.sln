@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunchClockIn", "PunchClockIn\PunchClockIn.csproj", "{D5712CCF-58E0-4815-AC67-429D49292C2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogonWorkOnService", "LogonWorkOnService\LogonWorkOnService.csproj", "{482A4250-797B-4D1D-8464-A68A1FE31403}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogonService", "LogonService\LogonService.csproj", "{482A4250-797B-4D1D-8464-A68A1FE31403}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Punches.Models", "Punches.Models\Punches.Models.csproj", "{7465FC80-C6A8-4A06-9D56-D66B0902EF00}"
 EndProject
@@ -14,6 +14,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{B963AB35-C1DD-4B31-8C4D-2491B9C54B99}"
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
+		Directory.Build.props = Directory.Build.props
+		Publish_CloclIn.bat = Publish_CloclIn.bat
+		Publish_Service.bat = Publish_Service.bat
 	EndProjectSection
 EndProject
 Global

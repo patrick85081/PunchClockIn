@@ -1,0 +1,19 @@
+﻿<Project>
+  <!-- 基本資訊 -->
+  <PropertyGroup>
+    <Product>PunchClockIn</Product>
+    <FileVersion>22.02.24.2</FileVersion>
+    <Version>1.0.0.5</Version>
+    <Company>PunchClockIn</Company>
+    <Authors>PunchClockIn</Authors>
+  </PropertyGroup>
+
+  <!-- 編譯組態 -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+</Project>

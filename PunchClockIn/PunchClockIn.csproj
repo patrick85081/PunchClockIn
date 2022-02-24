@@ -8,7 +8,6 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
     <DebugType>embedded</DebugType>
-    <AssemblyVersion>1.0.0.4</AssemblyVersion>
     <StartupObject>PunchClockIn.Program</StartupObject>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <RootNamespace>PunchClockIn</RootNamespace>
