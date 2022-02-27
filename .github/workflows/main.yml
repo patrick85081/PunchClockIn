@@ -21,4 +21,4 @@ jobs:
     
     # 執行單元測試專案
     - name: Run Unit Test 
-      run: dotnet test Punches.Services.UnitTests/Punches.Services.UnitTests.csprj
+      run: dotnet test Punches.Services.UnitTests/Punches.Services.UnitTests.csproj
