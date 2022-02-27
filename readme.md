@@ -1,4 +1,7 @@
 # 打卡幫手
+[![Run Unit Test](https://github.com/patrick85081/PunchClockIn/actions/workflows/main.yml/badge.svg)](https://github.com/patrick85081/PunchClockIn/actions/workflows/main.yml)
+---
+
 ## 開發緣由
 三級警戒爆發令許多人措手不及，隨著WFH帶來線上打卡的需求，臨時解決之道就先使用Google Sheet來做工具，  
 

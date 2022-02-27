@@ -8,12 +8,12 @@ namespace Punches.Repository.Services
     public class DailySheetService : IDailySheetService
     {
         private readonly string spreadsheetId;
-        private readonly SpreadsheetsServiceFactory serviceFactory;
+        private readonly ISpreadsheetsServiceFactory serviceFactory;
         private readonly DataContext dataContext;
         private readonly IHolidayRepository holidayRepository;
 
         public DailySheetService(
-            SpreadsheetsServiceFactory serviceFactory, DataContext dataContext, 
+            ISpreadsheetsServiceFactory serviceFactory, DataContext dataContext, 
             IHolidayRepository holidayRepository, GoogleSheetConfig googleSheetConfig)
         {
             this.serviceFactory = serviceFactory;

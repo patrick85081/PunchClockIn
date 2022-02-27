@@ -9,14 +9,14 @@ namespace Punches.Services;
 public class PunchSheetService : IPunchSheetService
 {
     private readonly string spreadsheetId;
-    private readonly SpreadsheetsServiceFactory factory;
+    private readonly ISpreadsheetsServiceFactory factory;
     private readonly ILogger logger;
     const int startRowIndex = 2;
 
     private Task<ISpreadsheetsApi> GetSpreadsheetsRepository(CancellationToken cancellationToken) =>
         factory.GetSpreadsheetsRepository(cancellationToken);
 
-    public PunchSheetService(SpreadsheetsServiceFactory factory, ILogger<PunchSheetService> logger, GoogleSheetConfig googleSheetConfig)
+    public PunchSheetService(ISpreadsheetsServiceFactory factory, ILogger<PunchSheetService> logger, GoogleSheetConfig googleSheetConfig)
     {
         this.factory = factory;
         this.logger = logger;
@@ -30,8 +30,8 @@ public class PunchSheetService : IPunchSheetService
 
     public async Task<(string title, ClockMonth[] month)> GetTitleAndMonth(CancellationToken cancellationToken)
     {
-        var spreadsheetsRepository = await GetSpreadsheetsRepository(cancellationToken);
-        var spreadsheetsInfo = await spreadsheetsRepository.GetSpreadsheetsInfo(spreadsheetId);
+        var spreadsheetsApi = await GetSpreadsheetsRepository(cancellationToken);
+        var spreadsheetsInfo = await spreadsheetsApi.GetSpreadsheetsInfo(spreadsheetId);
 
         var title = spreadsheetsInfo.Title;
         var months = spreadsheetsInfo.SheetProperties
@@ -57,8 +57,8 @@ public class PunchSheetService : IPunchSheetService
     /// <returns></returns>
     public async Task<Employee[]> GetEmployee(CancellationToken cancellationToken)
     {
-        var spreadsheetsRepository = await GetSpreadsheetsRepository(cancellationToken);
-        var sheetValue = await spreadsheetsRepository.GetSheetValue(spreadsheetId, "通訊錄!A3:F40", cancellationToken);
+        var spreadsheetsApi = await GetSpreadsheetsRepository(cancellationToken);
+        var sheetValue = await spreadsheetsApi.GetSheetValue(spreadsheetId, "通訊錄!A3:F40", cancellationToken);
 
         var rawData = sheetValue
             .Where(r => r.Count >= 1)

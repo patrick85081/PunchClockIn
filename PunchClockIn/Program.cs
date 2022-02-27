@@ -167,7 +167,7 @@ public static class Program
             builder.RegisterType<DailySheetService>()
                 .As<IDailySheetService>();
             builder.Register(x => new SpreadsheetsServiceFactory(x.Resolve<GoogleSheetConfig>()))
-                .AsSelf()
+                .As<ISpreadsheetsServiceFactory>()
                 .SingleInstance();
         }
 

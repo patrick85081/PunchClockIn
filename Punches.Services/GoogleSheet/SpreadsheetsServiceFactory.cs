@@ -6,7 +6,7 @@ using static System.Environment;
 
 namespace Punches.Services.GoogleSheet;
 
-public class SpreadsheetsServiceFactory
+public class SpreadsheetsServiceFactory : ISpreadsheetsServiceFactory
 {
     private readonly GoogleSheetConfig config;
 
