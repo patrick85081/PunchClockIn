@@ -3,14 +3,14 @@
 ---
 
 ## 開發緣由
-三級警戒爆發令許多人措手不及，隨著WFH帶來線上打卡的需求，臨時解決之道就先使用Google Sheet來做工具，  
+三級警戒爆發令許多人措手不及，隨著WFH帶來線上打卡的需求，臨時解決之道就先使用Google Sheet來做工具。  
 
-但每天打開Google表單往下滑尋找空位填資料，有時候下班忘記填寫時間，到了月底就要開始花時間在所有人的打卡記錄裡，檢查有自己沒有忘打卡，變成很不方便的一件事，  
+但每天打開Google表單往下滑尋找空位填資料，有時候下班忘記填寫時間，到了月底就要開始花時間在所有人的打卡記錄裡，檢查有自己沒有忘打卡，變成很不方便的一件事。  
 
 ## 需求的演進
-> 統計哪一天忘打卡 => 可以利用軟體打上下班卡 => 下班時間提醒 => 可以寫日報 => 瀏覽一週日報
+> 統計哪一天忘打卡 >> 可以利用軟體打上下班卡 >> 下班時間提醒 >> 可以寫日報 >> 瀏覽一週日報
 
-> 偵測電腦使用者登入自動打卡 => 超過下班時間太久自動打下班卡
+> 偵測電腦使用者登入自動打卡 >> 超過下班時間太久自動打下班卡
 
 ## 功能介紹
 1. 打卡記錄瀏覽
@@ -61,13 +61,10 @@
    * 使用`NLog`做日誌記錄
    * 使用`CommandLineParser`來做LogonService的安裝、移除、執行命令解析
 
-## 程式用途
-   * PunchClockIn - 打卡助手 (平常常駐於 Windows 工具列)
-   * LogonWorkOnService - 使用者登入偵測 (選配，需註冊成 Windows Service，需要使用使用者帳號登入執行)
-     ![](./snapshot/ServiceAccount.jpg)
-
-
-## 設定檔
+---
+## 程式說明
+### PunchClockIn - 打卡助手 (平常常駐於 Windows 工具列)
+* 設定檔  
 設定檔位於`Config.ini`中，必備參數如下
 ``` ini
 [GoogleSheet]
@@ -79,8 +76,13 @@ PunchSpreadsheetId=<Punch Sheet Id>
 DailySpreadsheetId=<Daily Sheet Id>
 ```
 
-## LogonService 命令
-### Help
+### LogonWorkOnService - 使用者登入偵測 (選配)
+> 需註冊成 Windows Service，需要使用使用者帳號登入執行)
+
+![](./snapshot/ServiceAccount.jpg)
+
+#### LogonService 命令 
+* Help
 ```
 $ LogonService --help
 LogonService 1.0.0
@@ -97,7 +99,7 @@ Copyright (C) 2022 LogonService
   version      Display version information.
 ```
 
-### 安裝
+* 安裝
 請使用使用者帳號執行，需要設定`-u <User> -p <Password>`
 ``` cmd
 LogonService install -u ./user -p mypassword
@@ -120,12 +122,12 @@ Copyright (C) 2022 LogonService
   --version         Display version information.
 ```
 
-### 移除服務
+* 移除服務
 ``` cmd
 LogonService uninstall
 ```
 
-### 執行
+* 執行
 ``` cmd
 LogonService
 ```
