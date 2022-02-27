@@ -175,15 +175,69 @@ public class PunchesServiceTests
         );
 
         var action = () => punchSheetService.WriteWorkOnTime(
-            new DateTime(2022, 2, 26),
-            "業務部", "小明 Min",
-            new TimeSpan(08, 23, 0))
+                new DateTime(2022, 2, 26),
+                "業務部", "小明 Min",
+                new TimeSpan(08, 23, 0))
             .GetAwaiter()
             .GetResult();
 
+        spreadsheetsApi.DidNotReceive()
+            .AppendRequest(Arg.Any<string>(), Arg.Any<string>(), data: Arg.Any<object[]>());
+        spreadsheetsApi.DidNotReceive()
+            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(), data: Arg.Any<object[]>());
         action.Should()
             .Throw<Exception>()
             .WithMessage("2022/02/26 小明 Min already Work On");
+    }
+
+    [Test]
+    public async Task WriteWorkOffTime_SheetNoData_Test()
+    {
+        SetupGetSheetValueReturn(
+            new List<IList<object>>()
+            {
+                new List<object>() { "2022/2/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/2/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/2/26", "業務部", "小明 Min", null, null, null, null, }
+            }
+        );
+
+        var action = () => punchSheetService.WriteWorkOffTime(
+                new DateTime(2022, 2, 27),
+                "小明 Min",
+                new TimeSpan(18, 23, 0))
+            .GetAwaiter()
+            .GetResult();
+
+        spreadsheetsApi.DidNotReceive()
+            .AppendRequest(Arg.Any<string>(), Arg.Any<string>(), data: Arg.Any<object[]>());
+        spreadsheetsApi.DidNotReceive()
+            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(), data: Arg.Any<object[]>());
+        action.Should()
+            .Throw<Exception>()
+            .WithMessage("2022/02/27 小明 Min Clock In is not found");
+    }
+
+    [Test]
+    public async Task WriteWorkOffTime_SheetHaveData_Test()
+    {
+        SetupGetSheetValueReturn(
+            new List<IList<object>>()
+            {
+                new List<object>() { "2022/2/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/2/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/2/26", "業務部", "小明 Min", null, null, null, null, }
+            }
+        );
+
+        await punchSheetService.WriteWorkOffTime(
+            new DateTime(2022, 2, 24),
+            "小明 Min",
+            new TimeSpan(18, 23, 0));
+
+        spreadsheetsApi.Received(1)
+            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(),
+                "18:23");
     }
 
     private void SetupGetSpreadsheetsInfoReturn(SpreadsheetsInfo spreadsheetsInfo)
