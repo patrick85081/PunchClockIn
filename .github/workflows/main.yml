@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
-  deploy-to-github-pages:
+  build-Unit-Test:
     # 使用ubuntu
     runs-on: ubuntu-latest
     steps:
@@ -21,4 +21,4 @@ jobs:
     
     # 執行單元測試專案
     - name: Run Unit Test 
-      run: dotnet test
+      run: dotnet test Punches.Services.UnitTests/Punches.Services.UnitTests.csprj
