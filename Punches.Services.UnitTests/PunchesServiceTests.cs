@@ -34,20 +34,16 @@ public class PunchesServiceTests
     [Test]
     public async Task GetEmployee_Test()
     {
-        spreadsheetsApi.GetSheetValue(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IList<IList<object>>>(
-                new List<IList<object>>()
-                {
-                    new List<object>() { "老闆", "Boss" },
-                    new List<object>() { "管理部" },
-                    new List<object>() { "小白", "White" },
-                    new List<object>() { "工程部" },
-                    new List<object>() { "攻城獅", "AttachLions" },
-                    new List<object>() { "小明", "Today" },
-                }));
+        SetupGetSheetValueReturn(new List<IList<object>>()
+        {
+            new List<object>() { "老闆", "Boss" },
+            new List<object>() { "管理部" },
+            new List<object>() { "小白", "White" },
+            new List<object>() { "工程部" },
+            new List<object>() { "攻城獅", "AttachLions" },
+            new List<object>() { "小明", "Today" },
+        });
+        
         var actual = (await punchSheetService.GetEmployee(CancellationToken.None));
         
         actual
@@ -64,20 +60,16 @@ public class PunchesServiceTests
     [Test]
     public async Task GetTitleAndMonth_Test()
     {
-        spreadsheetsApi.GetSpreadsheetsInfo(
-                Arg.Any<string>(),
-                Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<SpreadsheetsInfo>(
-                new SpreadsheetsInfo()
-                {
-                    Title = "這是標題",
-                    SheetProperties = new[]
-                    {
-                        new SheetProperty() { Title = "11102", SheetId = 24680 },
-                        new SheetProperty() { Title = "11103", SheetId = 24681 }
-                    }
-                }
-            ));
+        SetupGetSpreadsheetsInfoReturn(new SpreadsheetsInfo()
+        {
+            Title = "這是標題",
+            SheetProperties = new[]
+            {
+                new SheetProperty() { Title = "11102", SheetId = 24680 },
+                new SheetProperty() { Title = "11103", SheetId = 24681 }
+            }
+        });
+        
         var actual = (await punchSheetService.GetTitleAndMonth(CancellationToken.None));
         
         actual.title.Should().Be("這是標題");
@@ -93,20 +85,17 @@ public class PunchesServiceTests
     [Test]
     public async Task QueryMonth_Test()
     {
-        spreadsheetsApi.GetSheetValue(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IList<IList<object>>>(
-                new List<IList<object>>()
-                {
-                    new List<object>() { "2022/02/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司"},
-                    new List<object>() { "2022/02/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00"},
-                    new List<object>() { "2022/02/26", "業務部", "小明 Min", null, null, null, null, }
-                }
-            ));
+        SetupGetSheetValueReturn(
+            new List<IList<object>>()
+            {
+                new List<object>() { "2022/02/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/02/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/02/26", "業務部", "小明 Min", null, null, null, null, }
+            }
+        );
         
         var actual = (await punchSheetService.QueryMonthAsync("11102", CancellationToken.None));
+        
         actual.Should()
             .BeEquivalentTo(new List<ClockIn>()
             {
@@ -146,5 +135,25 @@ public class PunchesServiceTests
                     Location = null,
                 },
             });
+    }
+
+    private void SetupGetSpreadsheetsInfoReturn(SpreadsheetsInfo spreadsheetsInfo)
+    {
+        spreadsheetsApi.GetSpreadsheetsInfo(
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<SpreadsheetsInfo>(
+                spreadsheetsInfo
+            ));
+    }
+
+    private void SetupGetSheetValueReturn(List<IList<object>> result)
+    {
+        spreadsheetsApi.GetSheetValue(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IList<IList<object>>>(
+                result));
     }
 }

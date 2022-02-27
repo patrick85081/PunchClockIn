@@ -10,7 +10,6 @@ using PunchClockIn.Scheduler;
 using PunchClockIn.Services;
 using Punches.Repository;
 using Punches.Repository.Extensions;
-using Punches.Repository.Services;
 using Punches.Services;
 using ReactiveUI;
 

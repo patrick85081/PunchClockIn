@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using Punches.Models;
-using Punches.Services;
+using Punches.Repository;
 using Punches.Services.GoogleSheet;
 
-namespace Punches.Repository.Services
+namespace Punches.Services
 {
     public class DailySheetService : IDailySheetService
     {

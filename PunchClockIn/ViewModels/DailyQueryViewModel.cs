@@ -7,7 +7,6 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Punches.Models;
-using Punches.Repository.Services;
 using Punches.Services;
 using ReactiveUI;
 
