@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Punches.Models;
 using Punches.Services.GoogleSheet;
@@ -88,9 +89,9 @@ public class PunchesServiceTests
         SetupGetSheetValueReturn(
             new List<IList<object>>()
             {
-                new List<object>() { "2022/02/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
-                new List<object>() { "2022/02/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
-                new List<object>() { "2022/02/26", "業務部", "小明 Min", null, null, null, null, }
+                new List<object>() { "2022/2/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/2/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/2/26", "業務部", "小明 Min", null, null, null, null, }
             }
         );
         
@@ -135,6 +136,54 @@ public class PunchesServiceTests
                     Location = null,
                 },
             });
+    }
+
+    [Test]
+    public async Task WriteWorkOnTime_SheetNoData_Test()
+    {
+        SetupGetSheetValueReturn(
+            new List<IList<object>>()
+            {
+                new List<object>() { "2022/2/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/2/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/2/26", "業務部", "小明 Min", null, null, null, null, }
+            }
+        );
+
+        await punchSheetService.WriteWorkOnTime(
+            new DateTime(2022, 2, 27),
+            "業務部", "小明 Min",
+            new TimeSpan(08, 23, 0));
+
+        spreadsheetsApi.Received(1)
+            .AppendRequest(Arg.Any<string>(), Arg.Any<string>(),
+                "2022/2/27", "業務部", "小明 Min", "08:23");
+        spreadsheetsApi.Received(1)
+            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(), "公司");
+    }
+
+    [Test]
+    public async Task WriteWorkOnTime_SheetHaveData_Test()
+    {
+        SetupGetSheetValueReturn(
+            new List<IList<object>>()
+            {
+                new List<object>() { "2022/2/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司" },
+                new List<object>() { "2022/2/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00" },
+                new List<object>() { "2022/2/26", "業務部", "小明 Min", null, null, null, null, }
+            }
+        );
+
+        var action = () => punchSheetService.WriteWorkOnTime(
+            new DateTime(2022, 2, 26),
+            "業務部", "小明 Min",
+            new TimeSpan(08, 23, 0))
+            .GetAwaiter()
+            .GetResult();
+
+        action.Should()
+            .Throw<Exception>()
+            .WithMessage("2022/02/26 小明 Min already Work On");
     }
 
     private void SetupGetSpreadsheetsInfoReturn(SpreadsheetsInfo spreadsheetsInfo)
