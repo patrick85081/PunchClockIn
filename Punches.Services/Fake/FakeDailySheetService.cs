@@ -1,8 +1,9 @@
 ﻿using Punches.Models;
-using Punches.Repository.GoogleSheet;
+using Punches.Repository;
 using Punches.Repository.Services;
+using Punches.Services.GoogleSheet;
 
-namespace Punches.Repository.Fake;
+namespace Punches.Services.Fake;
 
 public class FakeDailySheetService : IDailySheetService
 {

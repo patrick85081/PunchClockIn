@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Punches.Repository.GoogleSheet;
+using Punches.Services.GoogleSheet;
 
 namespace PunchClockIn.Configs;
 

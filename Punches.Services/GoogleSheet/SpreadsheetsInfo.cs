@@ -1,4 +1,4 @@
-﻿namespace Punches.Repository.GoogleSheet;
+﻿namespace Punches.Services.GoogleSheet;
 
 public class SpreadsheetsInfo
 {

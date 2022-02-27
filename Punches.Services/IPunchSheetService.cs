@@ -1,6 +1,6 @@
 ﻿using Punches.Models;
 
-namespace Punches.Repository.Services;
+namespace Punches.Services;
 
 public interface IPunchSheetService
 {

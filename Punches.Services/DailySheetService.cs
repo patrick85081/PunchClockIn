@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Punches.Models;
-using Punches.Repository.GoogleSheet;
+using Punches.Services;
+using Punches.Services.GoogleSheet;
 
 namespace Punches.Repository.Services
 {

@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Punches.Repository.GoogleSheet;
+﻿namespace Punches.Services.GoogleSheet;
 
 public class GoogleSheetConfig
 {

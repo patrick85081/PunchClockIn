@@ -2,10 +2,9 @@
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Util.Store;
-using static System.IO.Path;
 using static System.Environment;
 
-namespace Punches.Repository.GoogleSheet;
+namespace Punches.Services.GoogleSheet;
 
 public class SpreadsheetsServiceFactory
 {

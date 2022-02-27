@@ -6,6 +6,7 @@ using PunchClockIn.Configs;
 using PunchClockIn.ViewModels;
 using Punches.Repository;
 using Punches.Repository.Services;
+using Punches.Services;
 using Quartz;
 using ReactiveUI;
 

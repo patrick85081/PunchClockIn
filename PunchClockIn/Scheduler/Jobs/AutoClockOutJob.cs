@@ -7,6 +7,7 @@ using PunchClockIn.Configs;
 using Punches.Models;
 using Punches.Repository;
 using Punches.Repository.Services;
+using Punches.Services;
 using Quartz;
 
 namespace PunchClockIn.Scheduler.Jobs;

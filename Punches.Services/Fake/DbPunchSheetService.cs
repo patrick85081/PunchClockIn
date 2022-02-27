@@ -1,9 +1,10 @@
 ﻿using Punches.Models;
+using Punches.Repository;
 using Punches.Repository.Extensions;
 using Punches.Repository.Services;
-using Punches.Repository.GoogleSheet;
+using Punches.Services.GoogleSheet;
 
-namespace Punches.Repository.Fake;
+namespace Punches.Services.Fake;
 
 public class DbPunchSheetService : IPunchSheetService
 {

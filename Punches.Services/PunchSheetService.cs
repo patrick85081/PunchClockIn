@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Punches.Models;
 using Punches.Repository.Extensions;
-using Punches.Repository.GoogleSheet;
+using Punches.Repository.Services;
+using Punches.Services.GoogleSheet;
 
-namespace Punches.Repository.Services;
+namespace Punches.Services;
 
 public class PunchSheetService : IPunchSheetService
 {

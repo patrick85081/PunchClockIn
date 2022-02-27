@@ -1,7 +1,7 @@
 ﻿using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 
-namespace Punches.Repository.GoogleSheet;
+namespace Punches.Services.GoogleSheet;
 
 public class GoogleSpreadsheetsApi : ISpreadsheetsApi
 {

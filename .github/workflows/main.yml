@@ -1,0 +1,24 @@
+name: Run Unit Test
+
+# 每次程式碼Push到master，執行workflow
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy-to-github-pages:
+    # 使用ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    # 使用checkout actions
+    - uses: actions/checkout@v2
+    
+    # 安裝.NET Core SDK 6.0
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    
+    # 執行單元測試專案
+    - name: Run Unit Test 
+      run: dotnet test

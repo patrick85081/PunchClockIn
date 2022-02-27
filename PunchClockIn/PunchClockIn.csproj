@@ -51,6 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Punches.Models\Punches.Models.csproj" />
     <ProjectReference Include="..\Punches.Repository\Punches.Repository.csproj" />
+    <ProjectReference Include="..\Punches.Services\Punches.Services.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
