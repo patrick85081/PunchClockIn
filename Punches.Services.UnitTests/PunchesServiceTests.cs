@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +59,6 @@ public class PunchesServiceTests
                 new Employee(){ Index = 5, ChineseName = "攻城獅", EnglishName = "AttachLions", Department = "工程部"},
                 new Employee(){ Index = 6, ChineseName = "小明", EnglishName = "Today", Department = "工程部"},
             });
-        Assert.Pass();
     }
 
     [Test]
@@ -71,13 +71,13 @@ public class PunchesServiceTests
                 new SpreadsheetsInfo()
                 {
                     Title = "這是標題",
-                    SheetProperties = new []
+                    SheetProperties = new[]
                     {
-                        new SheetProperty(){ Title = "11102", SheetId = 24680},
-                        new SheetProperty(){ Title = "11103", SheetId = 24681}
+                        new SheetProperty() { Title = "11102", SheetId = 24680 },
+                        new SheetProperty() { Title = "11103", SheetId = 24681 }
                     }
                 }
-));
+            ));
         var actual = (await punchSheetService.GetTitleAndMonth(CancellationToken.None));
         
         actual.title.Should().Be("這是標題");
@@ -88,6 +88,63 @@ public class PunchesServiceTests
                 new ClockMonth("11102", 24680),
                 new ClockMonth("11103", 24681),
             });
-        Assert.Pass();
+    }
+
+    [Test]
+    public async Task QueryMonth_Test()
+    {
+        spreadsheetsApi.GetSheetValue(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IList<IList<object>>>(
+                new List<IList<object>>()
+                {
+                    new List<object>() { "2022/02/24", "業務部", "小明 Min", "08:29", "18:30", null, "公司"},
+                    new List<object>() { "2022/02/25", "業務部", "小明 Min", null, null, null, null, "特休", "08:30~12:00"},
+                    new List<object>() { "2022/02/26", "業務部", "小明 Min", null, null, null, null, }
+                }
+            ));
+        
+        var actual = (await punchSheetService.QueryMonthAsync("11102", CancellationToken.None));
+        actual.Should()
+            .BeEquivalentTo(new List<ClockIn>()
+            {
+                new ClockIn()
+                {
+                    RowNumber = 2,
+                    Id = "1110224小明 Min",
+                    Date = new DateTime(2022, 2, 24), 
+                    Department = "業務部", 
+                    Name = "小明 Min", 
+                    WorkOn = new TimeSpan(08, 29, 0),
+                    WorkOff = new TimeSpan(18, 30, 0),
+                    Location = "公司"
+                },
+                new ClockIn()
+                {
+                    RowNumber = 3,
+                    Id = "1110225小明 Min",
+                    Date = new DateTime(2022, 2, 25), 
+                    Department = "業務部", 
+                    Name = "小明 Min", 
+                    WorkOn = null,
+                    WorkOff = null,
+                    Location = null,
+                    Status = "特休",
+                    Reason = "08:30~12:00"
+                },
+                new ClockIn()
+                {
+                    RowNumber = 4,
+                    Id = "1110226小明 Min",
+                    Date = new DateTime(2022, 2, 26), 
+                    Department = "業務部", 
+                    Name = "小明 Min", 
+                    WorkOn = null,
+                    WorkOff = null,
+                    Location = null,
+                },
+            });
     }
 }
