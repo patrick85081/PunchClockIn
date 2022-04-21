@@ -16,6 +16,7 @@ public interface IPunchSheetService
     /// <param name="workOff"></param>
     /// <returns></returns>
     Task WriteWorkOffTime(DateTime date, string name, TimeSpan workOff);
+
     /// <summary>
     /// 打上班卡
     /// </summary>
@@ -23,8 +24,11 @@ public interface IPunchSheetService
     /// <param name="department"></param>
     /// <param name="name"></param>
     /// <param name="workOn"></param>
+    /// <param name="s"></param>
+    /// <param name="location"></param>
     /// <returns></returns>
-    Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn);
+    Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn, 
+        string location, string remark);
     string GetSheetUrl(ClockMonth month);
 
     Task<ClockIn[]> QueryEmployeeAsync(

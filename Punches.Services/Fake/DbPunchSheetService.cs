@@ -75,7 +75,8 @@ public class DbPunchSheetService : IPunchSheetService
         // Not Implement
     }
 
-    public async Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn)
+    public async Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn, 
+        string location, string remark)
     {
         // Not Implement
     }

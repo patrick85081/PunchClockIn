@@ -7,10 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:PunchClockIn.ViewModels"
+    xmlns:converters="clr-namespace:PunchClockIn.Converters"
     d:DataContext="{d:DesignInstance viewModels:WorkInOutViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:WorkTypeToVisibilityConverter x:Key="WorkTypeToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid Margin="8" Grid.IsSharedSizeScope="True">
 
         <Grid.ColumnDefinitions>
@@ -18,6 +22,8 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -46,9 +52,45 @@
             Margin="8,8,0,0"
             SecondsItemStringFormat="hh:mm"
             SelectedDateTime="{Binding DateTime}" />
+        
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Visibility="{Binding WorkType, Converter={StaticResource WorkTypeToVisibilityConverter}, 
+                ConverterParameter={x:Static viewModels:WorkType.WorkIn}}"
+            Content="工作地點" />
+        <ComboBox 
+            Grid.Row="2" Grid.Column="1"
+            Margin="8,8,0,0"
+            VerticalAlignment="Center"
+            Visibility="{Binding WorkType, Converter={StaticResource WorkTypeToVisibilityConverter}, 
+                ConverterParameter={x:Static viewModels:WorkType.WorkIn}}"
+            SelectedItem="{Binding Location}"
+            SelectedIndex="0">
+            <system:String>公司</system:String>
+            <system:String>住家</system:String>
+            <system:String>公出/出差</system:String>
+        </ComboBox>
+        
+        <Label
+            Grid.Row="3"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Visibility="{Binding WorkType, Converter={StaticResource WorkTypeToVisibilityConverter}, 
+                ConverterParameter={x:Static viewModels:WorkType.WorkIn}}"
+            Content="備註" />
+        <TextBox
+            Grid.Row="3" Grid.Column="1"
+            Margin="8,8,0,0"
+            VerticalAlignment="Center"
+            Visibility="{Binding WorkType, Converter={StaticResource WorkTypeToVisibilityConverter}, 
+                ConverterParameter={x:Static viewModels:WorkType.WorkIn}}"
+            Text="{Binding Remark}"
+            ></TextBox>
 
         <Button
-            Grid.Row="2"
+            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             MinWidth="80"
@@ -62,7 +104,7 @@
             </Button.CommandParameter>
         </Button>
         <Button
-            Grid.Row="2"
+            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             MinWidth="80"

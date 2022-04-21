@@ -17,7 +17,7 @@ namespace PunchClockIn
         {
             InitializeComponent();
             this.Closing += MainWindow_Closing;
-            this.StateChanged += OnStateChanged;
+            this.StateChanged += MainWindow_OnStateChanged;
             if (Environment.GetCommandLineArgs().Contains("-hide"))
                 this.Activated += (s, e) => this.Hide();
             SingletonApp.HandleShow(this);
@@ -39,14 +39,6 @@ namespace PunchClockIn
                     e.CanExecute = true);
             CommandBindings.Add(hideCommandBinding);
         */
-        }
-
-        private void OnStateChanged(object? sender, EventArgs e)
-        {
-            if (this.WindowState == WindowState.Minimized)
-            {
-                this.Hide();
-            }
         }
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

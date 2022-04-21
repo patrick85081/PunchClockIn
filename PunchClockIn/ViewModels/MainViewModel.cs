@@ -62,8 +62,8 @@ public class MainViewModel : ReactiveObject
         {
             if (string.IsNullOrWhiteSpace(config.Name)) throw new Exception($"Please Set Employee.");
             var defaultWorkTime = DateTime.Today.AddHours(8).AddMinutes(30);
-            var (dialogResult, dateTime) =
-                await dialogService.ShowWorkInOutDialog($"{config.Name} 上班打卡", defaultWorkTime);
+            var (dialogResult, dateTime, location, remark) =
+                await dialogService.ShowWorkInDialog($"{config.Name} 上班打卡", defaultWorkTime);
             if (!dialogResult) return;
 
             var employee = employeeRepository.GetAll().FirstOrDefault(e => e.Id == config.Name);
@@ -73,7 +73,8 @@ public class MainViewModel : ReactiveObject
                 return;
             }
 
-            await punchSheetService.WriteWorkOnTime(dateTime.Date, employee.Department, employee.Id, dateTime.TimeOfDay);
+            await punchSheetService.WriteWorkOnTime(dateTime.Date, employee.Department, employee.Id, dateTime
+            .TimeOfDay, location, remark);
             await punchQuery.QueryCommand.Execute(punchQuery.QueryParameter);
             await dialogService.ShowMessageBox("Message", "上班打卡成功");
         }
@@ -91,7 +92,7 @@ public class MainViewModel : ReactiveObject
             if (string.IsNullOrWhiteSpace(config.Name)) throw new Exception($"Please Set Employee.");
             var defaultWorkTime = DateTime.Today.AddHours(17).AddMinutes(30);
             var (dialogResult, dateTime) =
-                await dialogService.ShowWorkInOutDialog($"{config.Name} 下班打卡", defaultWorkTime);
+                await dialogService.ShowWorkOutDialog($"{config.Name} 下班打卡", defaultWorkTime);
             if (!dialogResult) return;
 
             await punchSheetService.WriteWorkOffTime(dateTime.Date, config.Name, dateTime.TimeOfDay);

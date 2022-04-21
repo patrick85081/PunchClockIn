@@ -25,7 +25,7 @@ namespace PunchClockIn.Services
             {
                 DailyTypes = dailyTypes.Select(x => x.Name).ToArray(),
                 SelectDailyType = "優化",
-                Hour = 6.5,
+                Hour = 7.5,
                 Employee = employee,
             };
             dialog.Content = new DailyDialog()
@@ -36,15 +36,33 @@ namespace PunchClockIn.Services
             await dialog.WaitUntilUnloadedAsync();
             return (viewModel.Result == MessageDialogResult.Affirmative, viewModel);
         }
-
-        public async Task<(bool DialogResult, DateTime DateTime)> ShowWorkInOutDialog(string title, DateTime workTime)
+        public async Task<(bool DialogResult, DateTime DateTime, string Location, string)> ShowWorkInDialog(
+            string title, DateTime workTime)
         {
             var metroWindow = Application.Current.MainWindow as MetroWindow;
             var dialog = new CustomDialog(metroWindow)
             {
                 Title = title,
             };
-            var viewModel = new WorkInOutViewModel(workTime,
+            var viewModel = new WorkInOutViewModel(workTime, WorkType.WorkIn,
+                () => metroWindow.HideMetroDialogAsync(dialog));
+            dialog.Content = new WorkInOutDialog()
+            {
+                DataContext = viewModel
+            };
+            await metroWindow.ShowMetroDialogAsync(dialog);
+            await dialog.WaitUntilUnloadedAsync();
+            return (viewModel.Result == MessageDialogResult.Affirmative, viewModel.DateTime, viewModel.Location, viewModel.Remark);
+        }
+
+        public async Task<(bool DialogResult, DateTime DateTime)> ShowWorkOutDialog(string title, DateTime workTime)
+        {
+            var metroWindow = Application.Current.MainWindow as MetroWindow;
+            var dialog = new CustomDialog(metroWindow)
+            {
+                Title = title,
+            };
+            var viewModel = new WorkInOutViewModel(workTime, WorkType.WorkOut,
                 () => metroWindow.HideMetroDialogAsync(dialog));
             dialog.Content = new WorkInOutDialog()
             {

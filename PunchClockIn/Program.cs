@@ -101,7 +101,7 @@ public static class Program
             await punchSheetService.WriteWorkOnTime(
                 DateTime.Today,
                 employee.Department, config.Name,
-                nowTime);
+                nowTime, "公司", "");
             logger.LogInformation($"API Work On Request : Success");
             return Results.Ok("Work On Success");
         }

@@ -153,13 +153,13 @@ public class PunchesServiceTests
         await punchSheetService.WriteWorkOnTime(
             new DateTime(2022, 2, 27),
             "業務部", "小明 Min",
-            new TimeSpan(08, 23, 0));
+            new TimeSpan(08, 23, 0), "公司", "Test");
 
         spreadsheetsApi.Received(1)
             .AppendRequest(Arg.Any<string>(), Arg.Any<string>(),
                 "2022/2/27", "業務部", "小明 Min", "08:23");
         spreadsheetsApi.Received(1)
-            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(), "公司");
+            .WriteRequest(Arg.Any<string>(), Arg.Any<string>(), "公司", "", "Test");
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class PunchesServiceTests
         var action = () => punchSheetService.WriteWorkOnTime(
                 new DateTime(2022, 2, 26),
                 "業務部", "小明 Min",
-                new TimeSpan(08, 23, 0))
+                new TimeSpan(08, 23, 0), "公司", "")
             .GetAwaiter()
             .GetResult();
 

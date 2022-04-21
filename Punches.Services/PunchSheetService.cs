@@ -182,7 +182,10 @@ public class PunchSheetService : IPunchSheetService
     /// <param name="department"></param>
     /// <param name="name"></param>
     /// <param name="workOn"></param>
-    public async Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn)
+    /// <param name="s"></param>
+    /// <param name="location"></param>
+    public async Task WriteWorkOnTime(DateTime date, string department, string name, TimeSpan workOn, 
+        string location, string remark)
     {
         var spreadsheetsRepository = await GetSpreadsheetsRepository(CancellationToken.None);
 
@@ -207,7 +210,8 @@ public class PunchSheetService : IPunchSheetService
         else
             await spreadsheetsRepository.WriteRequest(spreadsheetId, $"{month}!A{clockInRowNumber}:D{clockInRowNumber}",
                 date.ToString("yyyy/M/d"), department, name, workOn.ToString(@"hh\:mm"));
-        await spreadsheetsRepository.WriteRequest(spreadsheetId, $"{month}!G{clockInRowNumber}:G{clockInRowNumber}", "公司");
+        await spreadsheetsRepository.WriteRequest(spreadsheetId, $"{month}!G{clockInRowNumber}:I{clockInRowNumber}", 
+            location, "", remark);
     }
 
     private readonly TimeSpan StartTime = TimeSpan.Parse("08:00");

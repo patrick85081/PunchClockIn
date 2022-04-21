@@ -8,7 +8,7 @@ namespace PunchClockIn.Services;
 
 public interface IDialogService
 {
-    Task<(bool DialogResult, DateTime DateTime)> ShowWorkInOutDialog(string title, DateTime workTime);
+    Task<(bool DialogResult, DateTime DateTime)> ShowWorkOutDialog(string title, DateTime workTime);
 
     Task<MessageDialogResult> ShowMessageBox(
         string title, string message,
@@ -20,4 +20,7 @@ public interface IDialogService
 
     Task<(bool DialogResult, DailyViewModel Daily)> ShowDailyDialog(string title, DailyType[] dailyTypes,
         Employee? employee);
+
+    Task<(bool DialogResult, DateTime DateTime, string Location, string)> ShowWorkInDialog(string title,
+        DateTime workTime);
 }
