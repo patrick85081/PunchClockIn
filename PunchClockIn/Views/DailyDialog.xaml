@@ -25,6 +25,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label
@@ -92,8 +93,20 @@
             Margin="8,8,8,0"
             Text="{Binding Daily, Mode=TwoWay, ValidatesOnDataErrors=True, ValidatesOnExceptions=True}" />
 
-        <Button
+        <Label
             Grid.Row="4"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="備註" />
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            Margin="8,8,8,0"
+            Text="{Binding Note, Mode=TwoWay, ValidatesOnDataErrors=True, ValidatesOnExceptions=True}" />
+
+        <Button
+            Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="4"
             MinWidth="80"
@@ -107,7 +120,7 @@
             </Button.CommandParameter>
         </Button>
         <Button
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="4"
             MinWidth="80"

@@ -29,7 +29,7 @@ namespace Punches.Services
         private async Task<ISpreadsheetsApi> GetSpreadsheetsRepository() => await serviceFactory.GetSpreadsheetsRepository(CancellationToken.None);
 
         public async Task WriteDaily(DateTime date, string department, string name, double hour, string dailyType,
-            string message)
+            string message, string note)
         {
             var spreadsheetsRepository = await GetSpreadsheetsRepository();
 
@@ -39,8 +39,8 @@ namespace Punches.Services
 
             var rowIndex = await GetRowIndex(spreadsheetsRepository, date);
 
-            await spreadsheetsRepository.AppendRequest(spreadsheetId, $"{title}!A{rowIndex}:F{rowIndex}",
-                date.ToString("yyyy/M/d"), dailyType, department, name, hour, message);
+            await spreadsheetsRepository.AppendRequest(spreadsheetId, $"{title}!A{rowIndex}:G{rowIndex}",
+                date.ToString("yyyy/M/d"), dailyType, department, name, hour, message, note);
         }
 
         public async Task<DailyModel[]> GetDaily(DateTime date)
@@ -50,22 +50,27 @@ namespace Punches.Services
             var firstRow = await GetRowIndex(spreadsheetsRepository, date);
 
             var values = await spreadsheetsRepository.GetSheetValue(
-                spreadsheetId, $"{date:yyyy/M}!A{firstRow + 1}:F{(firstRow + 60)}", CancellationToken.None);
+                spreadsheetId, $"{date:yyyy/M}!A{firstRow + 1}:G{(firstRow + 60)}", CancellationToken.None);
             
             if (values == null)
                 return new DailyModel[0];
 
-            return values
-                .Where(x => x.Count >= 6)
-                .Select(x => new DailyModel
-                {
-                    Date = DateTime.Parse(x[0]?.ToString()),
-                    DailyType = x[1]?.ToString(),
-                    Department = x[2]?.ToString(),
-                    Name = x[3]?.ToString(),
-                    Hour = x[4]?.ToString(),
-                    Message = x[5]?.ToString(),
-                })
+            return (
+                    from x in values
+                    where
+                        DateTime.TryParse(x.ElementAtOrDefault(0)?.ToString(), out _) &&
+                        x.Count >= 6
+                    select new DailyModel
+                    {
+                        Date = DateTime.Parse(x.ElementAtOrDefault(0)?.ToString()),
+                        DailyType = x.ElementAtOrDefault(1)?.ToString(),
+                        Department = x.ElementAtOrDefault(2)?.ToString(),
+                        Name = x.ElementAtOrDefault(3)?.ToString(),
+                        Hour = x.ElementAtOrDefault(4)?.ToString(),
+                        Message = x.ElementAtOrDefault(5)?.ToString(),
+                        Note = x.ElementAtOrDefault(6)?.ToString(),
+                    }
+                )
                 .ToArray();
         }
 

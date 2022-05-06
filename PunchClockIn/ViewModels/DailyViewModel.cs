@@ -62,6 +62,14 @@ namespace PunchClockIn.ViewModels
             set => this.RaiseAndSetIfChanged(ref employee, value);
         }
 
+        private string note = "";
+
+        public string Note
+        {
+            get => note;
+            set => this.RaiseAndSetIfChanged(ref note, value);
+        }
+
         public DailyViewModel(Func<Task> closeAction)
         {
             DateTime = DateTime.Today;

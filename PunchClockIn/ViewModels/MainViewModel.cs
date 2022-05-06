@@ -123,7 +123,8 @@ public class MainViewModel : ReactiveObject
                 $"{employee.ChineseName} {employee.EnglishName}",
                 daily.Hour,
                 daily.SelectDailyType,
-                daily.Daily);
+                daily.Daily,
+                daily.Note);
             await dialogService.ShowMessageBox("Message", "Success");
         }
         catch (Exception e)

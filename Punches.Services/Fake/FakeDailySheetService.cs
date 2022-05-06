@@ -15,7 +15,8 @@ public class FakeDailySheetService : IDailySheetService
         this.dataContext = dataContext;
         this.config = config;
     }
-    public Task WriteDaily(DateTime date, string department, string name, double hour, string dailyType, string message)
+    public Task WriteDaily(
+        DateTime date, string department, string name, double hour, string dailyType, string message, string note)
     {
         return Task.CompletedTask;
     }

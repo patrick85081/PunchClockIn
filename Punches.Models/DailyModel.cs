@@ -8,4 +8,5 @@ public class DailyModel
     public string? Name { get; set; }
     public string? Hour { get; set; }
     public string? Message { get; set; }
+    public string? Note { get; set; }
 }
