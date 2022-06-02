@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using Microsoft.Extensions.Logging;
 using Punches.Models;
 using Punches.Services;
 using ReactiveUI;
@@ -15,6 +16,7 @@ namespace PunchClockIn.ViewModels;
 public class DailyQueryViewModel : ReactiveObject
 {
     private readonly IDailySheetService dailySheetService;
+    private readonly ILogger<DailyQueryViewModel> logger;
     private readonly ObservableAsPropertyHelper<DailyModel[]> showDailyProperty;
     public ObservableCollection<DailyModel> DailyModels { get; } = new ObservableCollection<DailyModel>();
 
@@ -29,9 +31,10 @@ public class DailyQueryViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref selectName, value);
     }
 
-    public DailyQueryViewModel(IDailySheetService dailySheetService)
+    public DailyQueryViewModel(IDailySheetService dailySheetService, ILogger<DailyQueryViewModel> logger)
     {
         this.dailySheetService = dailySheetService;
+        this.logger = logger;
         Names.Add("All");
         SelectName = "All";
         this.ObservableForProperty(vm => vm.SelectName)
@@ -45,17 +48,19 @@ public class DailyQueryViewModel : ReactiveObject
                 models.Where(x => x.Name == name || name == "All")
                     .ToArray())
             .ToProperty(this, vm => vm.ShowDaily);
-        // this.showDailyProperty = this.WhenAny(
-        //         vm => vm.DailyModels,
-        //         vm => vm.SelectName,
-        //         (models, name) =>
-        //             models.Value
-        //                 .Where(x => x.Name == name.Value || name.Value == "All")
-        //                 .ToArray())
-            // .ToProperty(this, vm => ShowDaily);
+            
         Query = ReactiveCommand.CreateFromTask<DateTime, Unit>(async date =>
         {
-            var dailyModels = await dailySheetService.GetDaily(date);
+            DailyModel[] dailyModels;
+            try
+            {
+                dailyModels = await dailySheetService.GetDaily(date); 
+            } 
+            catch (Exception e)
+            {
+                logger.LogWarning(e, $"Get Daily Fail: {date}");
+                dailyModels = new DailyModel[0];
+            }
             DailyModels.Clear();
             DailyModels.AddRange(dailyModels);
 
